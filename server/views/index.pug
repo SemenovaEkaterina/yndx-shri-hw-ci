@@ -14,6 +14,8 @@ html
                     td= build.command
                     td
                         img(src='./static/' + build.status + '.svg', width='25px', height='25px')
+                    td= build.agent
+                    td= build.updated
 
         h1= 'Доступные агенты'
         table
@@ -22,5 +24,6 @@ html
                     td= agent.id
                     td= agent.url
                     td= agent.status
+                    td= agent.updated
 
         script(src='./static/script.js')

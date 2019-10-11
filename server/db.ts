@@ -66,6 +66,13 @@ export class Db {
     }
     return this.db.run('commit');
   };
+
+  delete = (table: string, id: number) => {
+    if (!this.db) {
+      return;
+    }
+    return this.db.run(`delete from ${table} where id=${id};`);
+  };
 }
 
 export default new Db();

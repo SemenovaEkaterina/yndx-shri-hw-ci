@@ -55,10 +55,14 @@ export class ModelManager implements ModelManagerI {
 
     // Изменение данных
     // @ts-ignore
-    await this.db.update(this.tableName, result, changes);
+    await this.db.update(this.tableName, {id: result.id}, changes);
     await this.db.commitTransaction();
 
     return result;
+  };
+
+  delete = (id: number) => {
+    return this.db.delete(this.tableName, id);
   }
 }
 

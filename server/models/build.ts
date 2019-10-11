@@ -11,6 +11,8 @@ export enum BuildStatus {
 export class Build extends Model {
   status: BuildStatus;
   command: string;
+  agent?: number;
+  updated?: number;
 
   constructor(command: string, status: BuildStatus = BuildStatus.NEW) {
     super();

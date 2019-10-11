@@ -1,32 +1,32 @@
 import express from 'express';
 import config from './config';
-import fetch from 'node-fetch';
+import callServer from './utils/callServer';
+import router from './router';
 
-const {port, server} = config;
+const {port, host} = config;
 
 const app = express();
-let agentId: number;
+app.use('/', router);
 
-const process = (id: number, command: string) => {
-  setTimeout(() => {
-    const status = command.includes('npm') ? 'success' : 'error';
-
-    fetch(`http://${server}/notify_build_result?id=${id}&status=${status}&agent=${agentId}`, {method: 'POST'});
-  }, 3000);
+const init = async () => {
+  const data = await callServer('/notify_agent', {host, port});
+  const {timeout} = await data.json();
+  app.set('timeout', timeout);
 };
 
-app.post('/build', function (req, res) {
-  const {id, command} = req.query;
-  process(id, command);
-
-  res.sendStatus(200);
+const server = app.listen(config.port, async function () {
+  try {
+    await init();
+    console.log(`Agent listening on port ${port}!`);
+  } catch (e) {
+    close(e);
+  }
 });
 
-
-app.listen(config.port, async function () {
-  const data = await fetch(`http://${server}/notify_agent?host=localhost&port=${port}`, {method: 'POST'});
-  const {id} = await data.json();
-  agentId = id;
-
-  console.log(`Agent listening on port ${port}!`);
-});
+const close = (e: ExceptionInformation) => {
+  server.close(() => {
+    console.log(e);
+    console.log('Agent shotdown');
+    process.exit(0);
+  });
+};
