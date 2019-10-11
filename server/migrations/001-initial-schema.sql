@@ -1,0 +1,7 @@
+-- Up
+CREATE TABLE Build (id INTEGER PRIMARY KEY, command TEXT, status TEXT);
+CREATE TABLE Agent (id INTEGER PRIMARY KEY, url TEXT, status TEXT);
+
+-- Down
+DROP TABLE Build;
+DROP TABLE Agent;

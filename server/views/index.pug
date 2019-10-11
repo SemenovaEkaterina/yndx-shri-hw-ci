@@ -1,0 +1,26 @@
+html
+    head
+        title= 'Сборки'
+    body
+        h1= 'Сборки'
+        input(id='input', value="npm start")
+        button(id='button') Собрать
+
+        table
+            each build in data
+                tr
+                    td
+                        a(href='./build/' + build.id)= build.id
+                    td= build.command
+                    td
+                        img(src='./static/' + build.status + '.svg', width='25px', height='25px')
+
+        h1= 'Доступные агенты'
+        table
+            each agent in agents
+                tr
+                    td= agent.id
+                    td= agent.url
+                    td= agent.status
+
+        script(src='./static/script.js')
