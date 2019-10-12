@@ -1,23 +1,26 @@
-import buildManager, { Build, BuildStatus } from '../models/build';
-import agentManager, { Agent, AgentStatus } from '../models/agent';
+import { Build, BuildStatus } from '../models/build';
+import { Agent, AgentStatus } from '../models/agent';
 import fetch from 'node-fetch';
+import { Models } from '../models/types';
+import getCurrentTime from './getCurrentTime';
 
-export default async (repo: string) => {
+export default async (models: Models, repo: string) => {
+  const {build: buildManager, agent: agentManager} = models;
+
   // Занять агента на обработку
   const agent = await agentManager.selectAndUpdate({status: AgentStatus.READY}, {
     status: AgentStatus.BUSY,
-    updated: new Date().getTime()
+    updated: getCurrentTime()
   }) as Agent;
 
   if (!agent) {
     return;
   }
 
-
   const changes = {
     status: BuildStatus.PROCESS,
     agent: agent.id,
-    updated: new Date().getTime()
+    updated: getCurrentTime()
   };
   // Занять сборку на обработку
   const build = await buildManager.selectAndUpdate({status: BuildStatus.NEW}, changes) as Build;
@@ -30,10 +33,7 @@ export default async (repo: string) => {
       hash: build.hash,
       repo
     });
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    };
+    const headers = {'Content-Type': 'application/json'};
     await fetch(url, {
       method: 'POST',
       body,

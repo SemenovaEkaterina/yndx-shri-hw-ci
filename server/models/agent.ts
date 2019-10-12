@@ -1,5 +1,5 @@
 import { Model, ModelManager } from './base';
-import db, { Db } from '../db';
+import Db from '../db';
 
 export enum AgentStatus {
   READY = 'ready',
@@ -24,5 +24,3 @@ export class AgentManager extends ModelManager {
     super(db, AgentManager.tableName, Agent);
   }
 }
-
-export default new AgentManager(db);

@@ -7,9 +7,6 @@ export default (url: string, body: object) => {
   return retry(`${server}${url}`, {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
+    headers: {'Content-Type': 'application/json'},
   });
 }

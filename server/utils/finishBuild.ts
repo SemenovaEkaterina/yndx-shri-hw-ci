@@ -1,7 +1,10 @@
-import buildManager, { Build, BuildStatus } from '../models/build';
-import agentManager, { Agent, AgentStatus } from '../models/agent';
+import { Build, BuildStatus } from '../models/build';
+import { Agent, AgentStatus } from '../models/agent';
+import { Models } from '../models/types';
 
-export default async (build: Build, agent: Agent, status: number, stdout: string, stderr: string) => {
+export default async (models: Models, build: Build, agent: Agent, status: number, stdout: string, stderr: string) => {
+  const {build: buildManager, agent: agentManager} = models;
+
   build.status = !status ? BuildStatus.SUCCESS : BuildStatus.ERROR;
   build.stdout = stdout;
   build.stderr = stderr;

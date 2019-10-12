@@ -1,17 +1,31 @@
 import sqlite, { Database, Statement } from 'sqlite';
+import config from './config';
 
 // TODO: обработка ошибок
 
-export class Db {
+export default class Db {
   db?: Database;
 
   connect = async () => {
     // TODO: проверять наличие миграций
     console.log('CONNECT DB');
 
-    this.db = await sqlite.open('./database.sqlite');
+    this.db = await sqlite.open(config.db);
     await this.db.migrate({});
     return 0;
+  };
+
+  __makePlaceholders = (data: any, condition = ', ', keyFunc= (key: string) => `${key} = ?`) => {
+    const entries = Object.entries(data);
+    const placeholders = [] as Array<string>;
+    const values = [] as Array<string>;
+    entries.forEach(([key, value]) => {
+      placeholders.push(keyFunc(key));
+      // @ts-ignore
+      values.push((value || '').toString());
+    });
+
+    return [placeholders.join(condition), values];
   };
 
   __makeParams = (data: any, condition = ', ') => {
@@ -23,8 +37,9 @@ export class Db {
     if (!this.db) {
       return;
     }
-    // TODO: обработка ошибок
-    const result = await this.db.all(`SELECT * FROM ${table} WHERE ${this.__makeParams(data, ' AND ')};`) as Array<object>;
+    const [placeholders, values] = this.__makePlaceholders(data, ' AND ');
+    const result = await this.db.all(`SELECT * FROM ${table} WHERE ${placeholders};`, values) as Array<object>;
+
     return result.length > 0 ? result[0] : undefined;
   };
 
@@ -40,8 +55,9 @@ export class Db {
       return;
     }
     const columns = Object.keys(data);
-    const values = Object.values(data).map(item => `"${item}"`);
-    const {lastID} = (await this.db.run(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${values.join(', ')});`)) as Statement;
+    const [placeholders, values] = this.__makePlaceholders(data, ', ', () => '?');
+
+    const {lastID} = await this.db.run(`INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders});`, values);
     return lastID;
   };
 
@@ -49,8 +65,10 @@ export class Db {
     if (!this.db) {
       return;
     }
-    const sql = `UPDATE ${table} SET ${this.__makeParams(changes)} WHERE ${this.__makeParams(search, " AND ")};`;
-    await this.db.run(sql);
+    const [placeholdersSearch, valuesSearch] = this.__makePlaceholders(search, ' AND ');
+    const [placeholdersChanges, valuesChanges] = this.__makePlaceholders(changes);
+    const sql = `UPDATE ${table} SET ${placeholdersChanges} WHERE ${placeholdersSearch};`;
+    await this.db.run(sql, [...valuesChanges, ...valuesSearch]);
   };
 
   startTransaction = () => {
@@ -71,10 +89,8 @@ export class Db {
     if (!this.db) {
       return;
     }
-    return this.db.run(`delete from ${table} where id=${id};`);
+    return this.db.run(`delete from ${table} where id=?;`, id);
   };
 }
-
-export default new Db();
 
 

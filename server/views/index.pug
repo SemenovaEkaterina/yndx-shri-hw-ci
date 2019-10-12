@@ -37,6 +37,10 @@ html
 
         h1= 'Доступные агенты'
         table
+            tr
+                th Id
+                th Адрес
+                th Статус
             each agent in agents
                 tr
                     td= agent.id

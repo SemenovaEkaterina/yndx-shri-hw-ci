@@ -1,5 +1,5 @@
 import { Model, ModelManager } from './base';
-import db, { Db } from '../db';
+import Db from '../db';
 
 export enum BuildStatus {
   NEW = 'new',
@@ -32,5 +32,3 @@ export class BuildManager extends ModelManager {
     super(db, BuildManager.tableName, Build);
   }
 }
-
-export default new BuildManager(db);

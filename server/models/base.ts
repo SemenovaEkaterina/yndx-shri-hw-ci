@@ -1,4 +1,4 @@
-import { Db } from '../db';
+import Db from '../db';
 
 export class Model {
   id?: number;

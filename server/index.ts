@@ -1,17 +1,18 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
-import db from './db';
+import Db from './db';
 import client from './routes/client';
 import agent from './routes/agent';
 import startBuild from './utils/startBuild';
 import checkBuilds from './utils/checkBuilds';
+import { AgentManager } from './models/agent';
+import { BuildManager } from './models/build';
 
 const {port, host, repo} = config;
 
 if (repo) {
   const app = express();
-
 
   app.set('view engine', 'pug');
   app.set('repo', repo);
@@ -23,10 +24,18 @@ if (repo) {
 
 // @ts-ignore
   app.listen(port, host, async function () {
+    const db = new Db();
     await db.connect();
-    startBuild(repo);
+    const models = {
+      agent: new AgentManager(db),
+      build: new BuildManager(db),
+    };
 
-    setInterval(checkBuilds, 1000);
+    app.set('models', models);
+
+    startBuild(models, repo);
+
+    checkBuilds(models);
     console.log(`Server listening on port ${port}!`);
   });
 } else {

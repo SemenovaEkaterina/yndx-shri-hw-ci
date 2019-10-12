@@ -4,7 +4,8 @@ export default {
   port,
   host,
   repo,
-  timeout: "100",
+  timeout: "500",
+  db: './database.sqlite',
 }
 
 
