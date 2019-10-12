@@ -10,12 +10,16 @@ export enum BuildStatus {
 
 export class Build extends Model {
   status: BuildStatus;
+  hash: string;
   command: string;
   agent?: number;
   updated?: number;
+  stdout?: string;
+  stderr?: string;
 
-  constructor(command: string, status: BuildStatus = BuildStatus.NEW) {
+  constructor(hash: string, command: string, status: BuildStatus = BuildStatus.NEW) {
     super();
+    this.hash = hash;
     this.command = command;
     this.status = status;
   }

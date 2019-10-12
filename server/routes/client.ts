@@ -17,11 +17,12 @@ router.get('/build/:id', async function (req, res) {
 });
 
 router.post('/build', async function (req, res) {
-  const {command} = req.query;
-  const build = await buildManager.create(command);
+  const {command, hash} = req.body;
+  const repo = req.app.get('repo');
+  await buildManager.create(hash, command);
 
   // Запуск новой сборки
-  startBuild();
+  startBuild(repo); //todo подумать над await
   res.sendStatus(200);
 });
 

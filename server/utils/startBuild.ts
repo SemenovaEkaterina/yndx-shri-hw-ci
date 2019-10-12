@@ -2,9 +2,12 @@ import buildManager, { Build, BuildStatus } from '../models/build';
 import agentManager, { Agent, AgentStatus } from '../models/agent';
 import fetch from 'node-fetch';
 
-export default async () => {
+export default async (repo: string) => {
   // Занять агента на обработку
-  const agent = await agentManager.selectAndUpdate({status: AgentStatus.READY}, {status: AgentStatus.BUSY, updated: new Date().getTime()}) as Agent;
+  const agent = await agentManager.selectAndUpdate({status: AgentStatus.READY}, {
+    status: AgentStatus.BUSY,
+    updated: new Date().getTime()
+  }) as Agent;
 
   if (!agent) {
     return;
@@ -20,12 +23,26 @@ export default async () => {
   const build = await buildManager.selectAndUpdate({status: BuildStatus.NEW}, changes) as Build;
 
   if (build) {
-    const url = `${(agent as Agent).url}/build?id=${build.id}&command=${build.command}`;
-    await fetch(url, {method: 'POST'}).catch((e) => {
+    const url = `${(agent as Agent).url}/build`;
+    const body = JSON.stringify({
+      id: build.id,
+      command: build.command,
+      hash: build.hash,
+      repo
+    });
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    await fetch(url, {
+      method: 'POST',
+      body,
+      headers
+    }).catch((e: ExceptionInformation) => {
       console.log(e);
       // В случае ошибки удаляем агента
       console.log(`Delete agent: ${e}`);
-      // agentManager.delete(agent.id!);
+      agentManager.delete(agent.id!);
       build.status = BuildStatus.NEW;
       buildManager.update(build);
     });

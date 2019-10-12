@@ -1,13 +1,11 @@
-import buildManager, { Build } from '../models/build';
+import buildManager, { Build, BuildStatus } from '../models/build';
 import agentManager, { Agent, AgentStatus } from '../models/agent';
-import startBuild from './startBuild';
 
-export default async (build: Build, agent: Agent, status: any) => {
-  build.status = status;
+export default async (build: Build, agent: Agent, status: number, stdout: string, stderr: string) => {
+  build.status = !status ? BuildStatus.SUCCESS : BuildStatus.ERROR;
+  build.stdout = stdout;
+  build.stderr = stderr;
   await buildManager.update(build);
   agent.status = AgentStatus.READY;
   await agentManager.update(agent);
-
-  // Поиск и запуск новой сборки
-  startBuild();
 };

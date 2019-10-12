@@ -1,6 +1,6 @@
 import buildManager, { BuildStatus } from '../models/build';
 import agentManager, { AgentStatus } from '../models/agent';
-import config from '../config.json';
+import config from '../config';
 
 const timeoutsCount = 5;
 

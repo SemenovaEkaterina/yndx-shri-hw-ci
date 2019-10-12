@@ -1,0 +1,51 @@
+version: '3'
+services:
+  server:
+    build: ./server
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      REPO: "https://github.com/SemenovaEkaterina/test-repo"
+    ports:
+      - "3000:3000"
+    networks:
+      - default
+
+  agent-01:
+    depends_on:
+      - server
+    build:
+      context: ./agent
+      dockerfile: ./docker/Dockerfile
+    environment:
+      AGENT_HOST: "agent-01"
+      AGENT_PORT: "3001"
+      SERVER_HOST: "server"
+      SERVER_PORT: "3000"
+    ports:
+      - "3001:3001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+
+  agent-02:
+    depends_on:
+      - server
+    build:
+      context: ./agent
+      dockerfile: ./docker/Dockerfile
+    environment:
+      AGENT_HOST: "agent-02"
+      AGENT_PORT: "3002"
+      SERVER_HOST: "server"
+      SERVER_PORT: "3000"
+    ports:
+      - "3002:3002"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+
+networks:
+  default:

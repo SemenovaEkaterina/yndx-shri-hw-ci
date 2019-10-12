@@ -1,0 +1,52 @@
+* {
+    font-family: helvetica neue;
+}
+
+table {
+    width: 100%;
+}
+
+td, th {
+    text-align: left;
+    padding: 10px 0;
+}
+
+td:last-child, th:last-child {
+    text-align: right;
+}
+
+.form {
+    padding-bottom: 10px;
+}
+
+.row {
+    margin-right: 10px;
+    display: inline-block;
+}
+
+label {
+    display: block;
+    width: 100px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input, button {
+    width: 300px;
+    height: 36px;
+    border: 2px solid #e0e0e0;
+    border-radius: 3px;
+    padding: 2px 13px;
+    margin-bottom: 12px;
+}
+
+button {
+    width: 150px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.status {
+    margin-right: 20px;
+}

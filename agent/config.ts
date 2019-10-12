@@ -1,7 +1,8 @@
-const [, , port] = process.argv;
+const [, , agentHostName='localhost', agentPort='3001', serverHostName = 'localhost', serverPort='3000' ] = process.argv;
 
 export default {
-  server: "http://localhost:3000",
-  port: port || "3001",
-  host: 'http://localhost',
+  port: agentPort,
+  server: `http://${serverHostName}:${serverPort}`,
+  domain: `http://${agentHostName}`,
+  host: '0.0.0.0',
 }

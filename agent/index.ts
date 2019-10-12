@@ -2,19 +2,22 @@ import express from 'express';
 import config from './config';
 import callServer from './utils/callServer';
 import router from './routes/server';
+import bodyParser from 'body-parser';
 
-const {port, host} = config;
+const {port, domain, host} = config;
 
 const app = express();
+app.use(bodyParser.json());
 app.use('/', router);
 
 const init = async () => {
-  const data = await callServer('/notify_agent', {host, port});
+  const data = await callServer('/notify_agent', {host: domain, port});
   const {timeout} = await data.json();
   app.set('timeout', timeout);
 };
 
-const server = app.listen(config.port, async function () {
+// @ts-ignore
+const server = app.listen(port, host,async function () {
   try {
     await init();
     console.log(`Agent listening on port ${port}!`);
@@ -26,7 +29,7 @@ const server = app.listen(config.port, async function () {
 const close = (e: ExceptionInformation) => {
   server.close(() => {
     console.log(e);
-    console.log('Agent shotdown');
+    console.log('Agent shutdown');
     process.exit(0);
   });
 };

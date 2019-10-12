@@ -1,12 +1,19 @@
 html
     head
         title= 'Сборка'
-        a(href='/')= 'Список сборок'
+        link(href='/static/style.css', rel='stylesheet')
     body
-        h1= 'Сборка'
+        a(href='/')= 'Список сборок'
+        h1= 'Команда'
+        div= data.command
 
-        table
-            tr
-                td= data.id
-                td= data.command
-                td= data.status
+        h1
+            span(class="status") Статус
+            img(src='/static/img/' + data.status + '.svg', width='25px', height='25px')
+
+
+        h1= 'Stdout'
+        pre= data.stdout
+
+        h1= 'Stderr'
+        pre= data.stderr

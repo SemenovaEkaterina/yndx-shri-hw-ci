@@ -1,27 +1,21 @@
 import callServer from '../utils/callServer';
 import express from 'express';
+import processBuild from '../utils/processBuild';
 const router = express.Router();
 
-let interval: any;
+router.post('/build', async function (req, res) {
+  const {id, command, hash, repo} = req.body;
 
-const processBuild = (id: number, command: string) => {
-  // Имитация сборки
-  setTimeout(async () => {
-    const status = command.includes('npm') ? 'success' : 'error';
+  const timeout = parseInt(req.app.get('timeout'));
 
-    clearInterval(interval);
-    await callServer('/notify_build_result', {id, status});
-  }, 5000);
-};
 
-router.post('/build', function (req, res) {
-  const {id, command} = req.query;
-  const timeout = req.app.get('timeout');
-  processBuild(id, command);
-
-  interval = setInterval(async () => {
+  const interval = setInterval(async () => {
     await callServer('/notify_agent_alive', {id});
-  }, parseInt(timeout));
+  }, timeout);
+
+  processBuild(id, repo, hash, command).then(() => {
+    clearInterval(interval);
+  });
 
   res.sendStatus(200);
 });
