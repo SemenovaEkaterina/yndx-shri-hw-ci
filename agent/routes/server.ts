@@ -1,17 +1,17 @@
-import callServer from './utils/callServer';
+import callServer from '../utils/callServer';
 import express from 'express';
 const router = express.Router();
 
 let interval: any;
 
 const processBuild = (id: number, command: string) => {
-  // Иммитация сборки
+  // Имитация сборки
   setTimeout(async () => {
     const status = command.includes('npm') ? 'success' : 'error';
 
     clearInterval(interval);
     await callServer('/notify_build_result', {id, status});
-  }, 2000);
+  }, 5000);
 };
 
 router.post('/build', function (req, res) {

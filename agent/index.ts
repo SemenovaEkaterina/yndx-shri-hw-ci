@@ -1,7 +1,7 @@
 import express from 'express';
 import config from './config';
 import callServer from './utils/callServer';
-import router from './router';
+import router from './routes/server';
 
 const {port, host} = config;
 
