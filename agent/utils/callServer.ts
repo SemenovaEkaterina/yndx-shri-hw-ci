@@ -3,6 +3,7 @@ import retry from './retry';
 
 const {server} = config;
 
+// Утилита для запросов к серверу
 export default (url: string, body: object) => {
   return retry(`${server}${url}`, {
     method: 'POST',

@@ -3,8 +3,8 @@ import callServer from './callServer';
 const util = require('util');
 const execFile = util.promisify(require('child_process').execFile);
 
+// Запуск процесса сборки в докере
 export default async (id: number, repo: string, hash: string, command: string) => {
-  // Имитация сборки
   const body = {id, status: 0, stdout: '', stderr: ''};
   try {
     const {stdout, stderr} = await execFile('./build.sh', [repo, hash, command], {cwd: __dirname});

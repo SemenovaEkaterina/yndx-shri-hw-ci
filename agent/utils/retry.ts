@@ -1,7 +1,8 @@
 import fetch, { Response } from 'node-fetch';
 import wait from './wait';
 
-// @ts-ignore
+
+// Утилита для ретраев с растущими таймаутами
 const fetch_retry = async (url: string, options: object, n: number = 0): Promise<Response> => {
   const BASE = 2;
   const MAX_WAIT_POW = 4;
@@ -16,6 +17,7 @@ const fetch_retry = async (url: string, options: object, n: number = 0): Promise
       i++;
     }
   }
+  throw new Error('Неправильное число попыток');
 };
 
 export default fetch_retry;

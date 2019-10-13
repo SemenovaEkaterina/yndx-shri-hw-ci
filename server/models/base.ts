@@ -1,4 +1,8 @@
-import Db from '../db';
+import Db, { DataI } from '../db';
+
+export class ModelI {
+  id?: number;
+}
 
 export class Model {
   id?: number;
@@ -23,24 +27,25 @@ export class ModelManager implements ModelManagerI {
     return await this.db.list(this.tableName);
   };
 
-  get = async (data: any) => {
+  get = async (data: DataI): Promise<ModelI | null> => {
     return await this.db.get(this.tableName, data);
   };
 
-  create = async (...args: Array<any>) => {
+  create = async (...args: Array<string | number | null>) => {
     const instance = new this.model(...args);
     instance.id = await this.db.insert(this.tableName, instance) as number;
     return instance;
   };
 
-  update = async (instance: any) => {
+  update = async (instance: ModelI) => {
     const {id, ...other} = instance;
-    await this.db.update(this.tableName, {id}, other);
+    // Точно есть id
+    await this.db.update(this.tableName, {id: id as number}, other);
   };
 
   // Используется как select_for_update для блокировки найденных свободных агентов/сборок
   // Поиск только первой подходящей строки
-  selectAndUpdate = async (search: any, changes: any) => {
+  selectAndUpdate = async (search: DataI, changes: DataI) => {
     // Транзакция заблокирует выбранные данные до момента изменения данных
     await this.db.startTransaction();
 
@@ -52,10 +57,12 @@ export class ModelManager implements ModelManagerI {
       await this.db.commitTransaction();
       return undefined;
     }
+    // В записи из базы точно будет id
+    // @ts-ignore
+    const id = result.id as number;
 
     // Изменение данных
-    // @ts-ignore
-    await this.db.update(this.tableName, {id: result.id}, changes);
+    await this.db.update(this.tableName, {id}, changes);
     await this.db.commitTransaction();
 
     return result;

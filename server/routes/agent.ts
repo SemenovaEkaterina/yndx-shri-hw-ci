@@ -10,12 +10,14 @@ const router = express.Router();
 
 const {timeout} = config;
 
+// Регистрация агента
 router.post('/notify_agent', async function (req, res) {
   const models = req.app.get('models');
   const {agent: agentManager} = models;
 
   const {host, port} = req.body;
   const url = `${host}:${port}`;
+  // Если такой агент уже есть, то переиспользуется
   const {id} = (await agentManager.get({url})) || (await agentManager.create(url));
 
   const repo = req.app.get('repo');
@@ -26,6 +28,8 @@ router.post('/notify_agent', async function (req, res) {
   res.json({id, timeout});
 });
 
+// Обновление информации о сборке
+// Чтобы понимать, что агент отвалился
 router.post('/notify_agent_alive', async function (req, res) {
   const {build: buildManager, agent: agentManager} = req.app.get('models');
 
@@ -41,6 +45,8 @@ router.post('/notify_agent_alive', async function (req, res) {
   res.sendStatus(200);
 });
 
+
+// Завершение сборки
 router.post('/notify_build_result', async function (req, res) {
   const models = req.app.get('models');
   const {build: buildManager, agent: agentManager} = models;

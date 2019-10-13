@@ -7,6 +7,10 @@ import wait from './wait';
 
 const timeoutsCount = 5;
 
+/*
+  В цикле проверяем последнее время обновления сборки, чтобы обнаруживать
+  агентов, которые стали недоступны
+ */
 const checkBuilds = async (models: Models) => {
   const {build: buildManager, agent: agentManager} = models;
 

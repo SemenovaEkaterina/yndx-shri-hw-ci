@@ -10,14 +10,14 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/', router);
 
+// Оповещение сервера о готовности
 const init = async () => {
   const data = await callServer('/notify_agent', {host: domain, port});
   const {timeout} = await data.json();
   app.set('timeout', timeout);
 };
 
-// @ts-ignore
-const server = app.listen(port, host,async function () {
+const server = app.listen(parseInt(port), host,async function () {
   try {
     await init();
     console.log(`Agent listening on port ${port}!`);

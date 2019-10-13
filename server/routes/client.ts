@@ -16,7 +16,9 @@ router.get('/build/:id', async function (req, res) {
 
   const {id} = req.params;
   const data = await buildManager.get({id: parseInt(id)});
-  res.render('build', {data});
+  const passedTime = new Date();
+  passedTime.setTime(data.updated);
+  res.render('build', {data, finish: `${passedTime.toDateString()} ${passedTime.toTimeString()}`});
 });
 
 router.post('/build', async function (req, res) {

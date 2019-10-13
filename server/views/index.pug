@@ -24,8 +24,7 @@ html
                 th Агент
             each build in data
                 tr
-                    td
-                        a(href='./build/' + build.id)= build.id
+                    td= build.id
                     td= build.hash
                     td= build.command
                     td
@@ -34,6 +33,8 @@ html
                     //td= build.updated
                     //td= build.stdout
                     //td= build.stderr
+                    td
+                        a(href='./build/' + build.id) Посмотреть
 
         h1= 'Доступные агенты'
         table

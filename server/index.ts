@@ -22,8 +22,7 @@ if (repo) {
   app.use('/', client);
   app.use('/', agent);
 
-// @ts-ignore
-  app.listen(port, host, async function () {
+  app.listen(parseInt(port), host, async function () {
     const db = new Db();
     await db.connect();
     const models = {

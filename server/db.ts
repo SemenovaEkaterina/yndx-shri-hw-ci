@@ -1,7 +1,10 @@
 import sqlite, { Database, Statement } from 'sqlite';
 import config from './config';
+import { ModelI } from './models/base';
 
 // TODO: обработка ошибок
+
+export type DataI = { [key: string]: string | number | null; } | {}
 
 export default class Db {
   db?: Database;
@@ -15,32 +18,31 @@ export default class Db {
     return 0;
   };
 
-  __makePlaceholders = (data: any, condition = ', ', keyFunc= (key: string) => `${key} = ?`) => {
+  __makePlaceholders = (data: DataI, condition = ', ', keyFunc = (key: string) => `${key} = ?`) => {
     const entries = Object.entries(data);
     const placeholders = [] as Array<string>;
     const values = [] as Array<string>;
     entries.forEach(([key, value]) => {
       placeholders.push(keyFunc(key));
-      // @ts-ignore
       values.push((value || '').toString());
     });
 
     return [placeholders.join(condition), values];
   };
 
-  __makeParams = (data: any, condition = ', ') => {
+  __makeParams = (data: DataI, condition = ', ') => {
     const entries = Object.entries(data);
     return entries.map(([key, value]) => `${key}="${value}"`).join(condition);
   };
 
-  get = async (table: string, data: any) => {
+  get = async (table: string, data: DataI): Promise<ModelI | null> => {
     if (!this.db) {
-      return;
+      return null;
     }
     const [placeholders, values] = this.__makePlaceholders(data, ' AND ');
     const result = await this.db.all(`SELECT * FROM ${table} WHERE ${placeholders};`, values) as Array<object>;
 
-    return result.length > 0 ? result[0] : undefined;
+    return result.length > 0 ? result[0] : null;
   };
 
   list = async (table: string) => {
@@ -61,7 +63,7 @@ export default class Db {
     return lastID;
   };
 
-  update = async (table: string, search: { [key: string]: string }, changes: any) => {
+  update = async (table: string, search: { [key: string]: string | number }, changes: DataI) => {
     if (!this.db) {
       return;
     }
